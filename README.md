@@ -1,6 +1,6 @@
 # docker-compose devsetup
 
-[![Build Status](https://travis-ci.org/drunomics/devsetup-docker?branch=1.x)](https://travis-ci.org/drunomics/devsetup-docker)
+[![Build Status](https://travis-ci.org/drunomics/devsetup-docker.svg?branch=1.x)](https://travis-ci.org/drunomics/devsetup-docker)
 
 A simple devsetup based upon docker-compose. The devsetup makes use of the
 drunomics docker images by default.
