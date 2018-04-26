@@ -21,10 +21,13 @@ before_install:
   - sudo mv docker-compose /usr/local/bin
 
 install:
+  - mkdir ../web
+  - echo "OK" > ../web/index.html
   - docker-compose up -d
 
 script:
-  - curl -N http://localhost:80
+ 
+  - curl -vN http://localhost:80
 
 after_success:
   - echo "SUCCESS!"
