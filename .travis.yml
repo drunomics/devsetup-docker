@@ -1,0 +1,30 @@
+language: php
+sudo: required
+
+git:
+  depth: 5
+
+env:
+  global:
+    - DOCKER_COMPOSE_VERSION=1.19.0
+addons:
+  apt:
+    packages:
+      - docker-ce
+
+# Setup the environment.
+before_install:
+  # Upgrade docker compose.
+  - sudo rm /usr/local/bin/docker-compose
+  - curl -L https://github.com/docker/compose/releases/download/${DOCKER_COMPOSE_VERSION}/docker-compose-`uname -s`-`uname -m` > docker-compose
+  - chmod +x docker-compose
+  - sudo mv docker-compose /usr/local/bin
+
+install:
+  - docker-compose up -d
+
+script:
+  - curl -N http://localhost:80
+
+after_success:
+  - echo "SUCCESS!"
