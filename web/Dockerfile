@@ -5,9 +5,11 @@ ARG WEB_IMAGE_VERSION=latest
 FROM $WEB_IMAGE:$WEB_IMAGE_VERSION
 MAINTAINER drunomics GmbH <hello@drunomics.com>
 
+# Not that the argument defaults are overrriden by default in docker-compose.yml
+# and environment variabels provided via .env or the environment.
 ARG WEB_DIRECTORY=web
 ARG WEB_PROVISION_VARS_PATTERN=web/provision-vars-*.yml
-ARG WEB_PROVISION_PLAYBOOK_COMMAND="ansible-playbook lamp.yml --tags lamp,base,nodejs,tools -vv"
+ARG WEB_PROVISION_PLAYBOOK_COMMAND="ansible-playbook lamp.yml --tags tools --skip-tags=apache -vv"
 ARG WEB_EXTRA_PLAYBOOK_PATTERN=extra-*.yml
 ARG WEB_EXTRA_PLAYBOOK_COMMAND="ansible-playbook extra-play*.yml --skip-tags=php -vv"
 

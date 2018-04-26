@@ -9,9 +9,9 @@ services:
         - WEB_IMAGE
         - WEB_IMAGE_VERSION
         - WEB_PROVISION_VARS_PATTERN
-        - WEB_PROVISION_PLAYBOOK_COMMAND
+        - WEB_PROVISION_PLAYBOOK_COMMAND=${WEB_PROVISION_PLAYBOOK_COMMAND:-ansible-playbook lamp.yml --tags tools --skip-tags=apache -vv}
         - WEB_EXTRA_PLAYBOOK_PATTERN
-        - WEB_EXTRA_PLAYBOOK_COMMAND
+        - WEB_EXTRA_PLAYBOOK_COMMAND=${WEB_EXTRA_PLAYBOOK_COMMAND:-ansible-playbook extra-play*.yml --skip-tags=php -vv}
         - WEB_DIRECTORY
     image: ${COMPOSE_PROJECT_NAME}_web
     ports:
