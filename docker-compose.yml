@@ -6,20 +6,20 @@ services:
       context: .
       dockerfile: web/Dockerfile
       args:
-        - WEB_IMAGE
-        - WEB_IMAGE_VERSION
-        - WEB_PROVISION_VARS_PATTERN
+        - WEB_IMAGE=${WEB_IMAGE:-drunomics/lamp}
+        - WEB_IMAGE_VERSION=${WEB_IMAGE_VERSION:-latest}
+        - WEB_PROVISION_VARS_PATTERN=${WEB_PROVISION_VARS_PATTERN:-web/*-vars.yml}
         - WEB_PROVISION_PLAYBOOK_COMMAND=${WEB_PROVISION_PLAYBOOK_COMMAND:-ansible-playbook lamp.yml --tags tools --skip-tags=apache -vv}
-        - WEB_EXTRA_PLAYBOOK_PATTERN
+        - WEB_EXTRA_PLAYBOOK_PATTERN=${WEB_EXTRA_PLAYBOOK_PATTERN:-extra*.yml}
         - WEB_EXTRA_PLAYBOOK_COMMAND=${WEB_EXTRA_PLAYBOOK_COMMAND:-ansible-playbook extra-play*.yml --skip-tags=php -vv}
-        - WEB_DIRECTORY
+        - WEB_DIRECTORY=${WEB_DIRECTORY:-web}
     image: ${COMPOSE_PROJECT_NAME}_web
     ports:
-     - "$WEB_LISTEN_IP:$WEB_HTTP_PORT:80"
+     - "${WEB_LISTEN_IP:-127.0.0.1}:${WEB_HTTP_PORT:-80}:80"
     volumes:
       - mysql_data:/var/lib/mysql
       - type: bind
-        source: $COMPOSE_CODE_DIR
+        source: ${COMPOSE_CODE_DIR:-..}
         target: /srv/default/vcs
     networks:
       default:

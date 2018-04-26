@@ -1,5 +1,5 @@
 # Note that all other arguments must go below FROM!
-ARG WEB_IMAGE=lamp
+ARG WEB_IMAGE=drunomics/lamp
 ARG WEB_IMAGE_VERSION=latest
 
 FROM $WEB_IMAGE:$WEB_IMAGE_VERSION
