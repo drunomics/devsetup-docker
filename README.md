@@ -9,8 +9,17 @@ The variables in the .env file are defaults and should be overridden by
 environment variables that are sourced in the shell; e.g.:
 
     source dotenv/loader.sh
-    cd devsetup
     docker-composer up -d
+
+The defaults provided in .env should be added to the project's .env files.
+In addition a COMPOSE_FILE variable needs to be declared, so that docker
+compose finds the compose files:
+
+	COMPOSE_FILE=devsetup-docker/docker-compose.yml:devsetup-docker/service-chrome.yml
+
+Then, once the environment is loaded, it can be simply used:
+	
+	docker-compose up -d
     
 Alternatively, this can be handled by a wrapper script, of course.
 
