@@ -8,13 +8,13 @@ MAINTAINER drunomics GmbH <hello@drunomics.com>
 # Not that the argument defaults are overrriden by default in docker-compose.yml
 # and environment variabels provided via .env or the environment.
 ARG WEB_DIRECTORY=web
-ARG WEB_PROVISION_VARS_PATTERN=web/provision-vars-*.yml
+ARG WEB_PROVISION_VARS_PATTERN=web/*-vars.yml
 ARG WEB_PROVISION_PLAYBOOK_COMMAND="ansible-playbook lamp.yml --tags tools --skip-tags=apache -vv"
 ARG WEB_EXTRA_PLAYBOOK_PATTERN=extra-*.yml
 ARG WEB_EXTRA_PLAYBOOK_COMMAND="ansible-playbook extra-play*.yml --skip-tags=php -vv"
 
 # Apply provision vars.
-COPY nothing-*.yml web/50-disable-unused-vars.yml /etc/ansible/group_vars/all/
+COPY $WEB_PROVISION_VARS_PATTERN /etc/ansible/group_vars/all/
 
 RUN \
   # Fix issues with connecting to upstart, see
