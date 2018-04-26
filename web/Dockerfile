@@ -6,7 +6,7 @@ FROM $WEB_IMAGE:$WEB_IMAGE_VERSION
 MAINTAINER drunomics GmbH <hello@drunomics.com>
 
 ARG WEB_DIRECTORY=web
-ARG WEB_PROVISION_VARS_PATTERN=nothing-*.yml
+ARG WEB_PROVISION_VARS_PATTERN=web/provision-vars-*.yml
 ARG WEB_PROVISION_PLAYBOOK_COMMAND="ansible-playbook lamp.yml --tags lamp,base,nodejs,tools -vv"
 ARG WEB_EXTRA_PLAYBOOK_PATTERN=extra-*.yml
 ARG WEB_EXTRA_PLAYBOOK_COMMAND="ansible-playbook extra-play*.yml --skip-tags=php -vv"
