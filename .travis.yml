@@ -22,14 +22,13 @@ before_install:
 
 install:
   - mkdir -p code/web
-  - echo "OK" > code/web/index.html
-  - export COMPOSE_CODE_DIR=./code
-  - docker-compose up -d
-  # Wait for the server being up.
-  - nc -zvv localhost 80; out=$?; while [[ $out -ne 0 ]]; do echo "Retry hit port 80..."; nc -zvv localhost 80; out=$?; sleep 1; done
+  - echo "OK" > ./code/web/index.html
+  - COMPOSE_CODE_DIR=$PWD/code docker-compose up -d
+  # Wait a bit so apache had a chance to start.
+  # Note that we cannot wait for the port as docker opens it earlier.
+  - sleep 3
 
 script:
- 
   - curl -vN http://localhost:80
 
 after_success:
