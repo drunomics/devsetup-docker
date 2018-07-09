@@ -40,6 +40,3 @@ RUN cd /root/playbooks && \
   # Restore initctl.
   rm /sbin/initctl && cp /sbin/initctl.distrib /sbin/initctl
 
-# Prepare web root.
-RUN mkdir /srv/default && ln -s vcs/$WEB_DIRECTORY /srv/default/web
-WORKDIR /srv/default/vcs
