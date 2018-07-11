@@ -40,3 +40,5 @@ RUN cd /root/playbooks && \
   # Restore initctl.
   rm /sbin/initctl && cp /sbin/initctl.distrib /sbin/initctl
 
+# Set default web root.
+RUN ln -sfn vcs/$WEB_DIRECTORY /srv/default/web
