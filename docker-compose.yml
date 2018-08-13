@@ -25,6 +25,7 @@ services:
     networks:
       default:
         aliases:
+          - ${COMPOSE_PROJECT_NAME}.localdev.space
           - ${COMPOSE_PROJECT_NAME}.local
 
 volumes:
