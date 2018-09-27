@@ -1,0 +1,30 @@
+FROM amazeeio/php:7.2-cli-drupal
+ARG APP_FILES=.
+ARG LAGOON_SSH_PRIVATE_KEY
+ARG LAGOON_GIT_BRANCH
+
+# APP_FILES should be set to the code-base (.) during builds on lagoon.
+#
+# For development, it's convenient to set it to something empty in order to
+# speed up local development. Locally, the app directory is mounted as volume
+# via docker-compose anyway, so the build in the /app directory is not needed.
+
+COPY $APP_FILES /app
+
+# Define where the Drupal root is located.
+ENV WEBROOT=web
+# Ease running cli commands.
+ENV PATH="/app/vendor/bin:${PATH}"
+
+RUN echo $LAGOON_GIT_BRANCH > /app/branch
+
+# Setup and build the code-base, but only if APP_FILES points to a valid-code
+# base.
+RUN /bin/bash -c "[[ ! -f /app/composer.json ]] || (composer install-phar-tools && ./vendor/bin/phapp setup amazeeio.build)"
+
+# If the branch is pre-built (i.e. a build branch), the following step can be
+# skipped.
+RUN /bin/bash -c "if [[ -f /app/composer.json ]] && [[ ! \"$LAGOON_GIT_BRANCH\" =~ ^build/ ]]; then \
+  /lagoon/entrypoints/05-ssh-key.sh && \
+  ./vendor/bin/phapp build; \
+fi"

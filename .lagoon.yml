@@ -1,0 +1,46 @@
+docker-compose-yaml: docker-compose.yml
+
+project: {{ project }}
+
+routes:
+  insecure: Redirect
+
+tasks:
+#   pre-rollout:
+#     - run:
+#         name: drush sql-dump
+#         command: mkdir -p /app/files/$SITE/private/ && drush sql-dump --ordered-dump --gzip --result-file=/app/files/$SITE/private/pre-deploy-dump.sql.gz
+#         service: cli
+
+  post-rollout:
+    - run:
+        name: env variables
+        command: env
+        service: cli
+    - run:
+        name: Initialize project if necessary
+        command: |
+            # Ensure that directories in persistent storage are created.
+            phapp setup amazeeio.$LAGOON_GIT_SAFE_BRANCH
+
+            if ! phapp status; then
+              phapp init --no-build
+            fi
+        service: cli
+        shell: bash
+    - run:
+        name: phapp update
+        command: phapp update --no-build
+        service: cli
+        shell: bash
+
+environments:
+  master:
+    cronjobs:
+      - name: drush cron
+        schedule: "*/15 * * * *"
+        command: drush cron
+        service: cli
+    routes:
+        - varnish:
+            - "{{ project }}.amazee.io"
