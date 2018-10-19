@@ -22,6 +22,6 @@ Then commit changes:
 
 ## Credits
 
-Based upon the setup provided by amazee.io, see 
-https://github.com/amazeeio/drupal-example
-(c) 2018 drunomics GmbH, GNU GPLv2+
+* Based upon the setup provided by amazee.io, see 
+  https://github.com/amazeeio/drupal-example
+* (c) 2018 drunomics GmbH, GNU GPLv2+
