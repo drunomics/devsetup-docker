@@ -19,6 +19,10 @@ Then commit changes:
 
     git add .
     git commit -am "Added amazeeio devsetup."
+    
+Follow lagoon docs for finishing the setup on amazeeio:
+
+  https://lagoon.readthedocs.io/en/latest/using_lagoon/setup_project/#2-provide-access-to-your-code
 
 ## Credits
 
