@@ -16,8 +16,6 @@ ENV WEBROOT=web
 # Ease running cli commands.
 ENV PATH="/app/vendor/bin:${PATH}"
 
-RUN echo $LAGOON_GIT_BRANCH > /app/branch
-
 # Setup and build the code-base, but only if APP_FILES points to a valid-code
 # base.
 RUN /bin/bash -c "[[ ! -f /app/composer.json ]] || (composer install-phar-tools && ./vendor/bin/phapp setup amazeeio.build)"
