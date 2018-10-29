@@ -1,21 +1,22 @@
 version: '2.3'
 
 x-lagoon-project:
-  # Lagoon project name (leave `&lagoon-project` when you edit this)
-  &lagoon-project {{ project }}
+  # Lagoon project name (leave `&lagoon-project` when you edit this).
+  # Note that we need to provide env default values for execution on lagoon.
+  &lagoon-project ${COMPOSE_PROJECT:-{{ project }}}
 
 x-volumes:
   &default-volumes
     # Define all volumes you would like to have real-time mounted into the docker containers
     volumes:
-      - .:/app:delegated
+      - ${COMPOSE_APP_DIR:-.}:/app:delegated
 
 x-environment:
   &default-environment
     LAGOON_PROJECT: *lagoon-project
     # Route that should be used locally, if you are using pygmy,
     # this route *must* end with .docker.amazee.io
-    LAGOON_ROUTE: http://{{ project }}.docker.amazee.io
+    LAGOON_ROUTE: http://${COMPOSE_HOSTNAME}
     # Uncomment if you like to have the system behave like in production
     #LAGOON_ENVIRONMENT_TYPE: production
     # Uncomment to enable xdebug and then restart via `docker-compose up -d`
@@ -45,8 +46,6 @@ services:
       lagoon.persistent: /app/files/ # location where the persistent storage should be mounted
     << : *default-volumes # loads the defined volumes from the top
     user: root
-    volumes_from: # mount the ssh-agent from the pygmy or cachalot ssh-agent
-      - container:amazeeio-ssh-agent
     environment:
       << : *default-environment # loads the defined environment variables from the top
 
@@ -59,6 +58,8 @@ services:
     labels:
       lagoon.type: nginx-php-persistent
       lagoon.persistent: /app/files/ # define where the persistent storage should be mounted too
+      traefik.enable: true
+      traefik.port: 8080
     << : *default-volumes # loads the defined volumes from the top
     << : *default-user # uses the defined user from top
     depends_on:
@@ -67,7 +68,7 @@ services:
       << : *default-environment # loads the defined environment variables from the top
       LAGOON_LOCALDEV_URL: nginx-drupal-example.docker.amazee.io # generate another route for nginx, by default we go to varnish
     networks:
-      - amazeeio-network
+      - traefik
       - default
 
   php:
@@ -119,6 +120,9 @@ services:
     image: amazeeio/varnish-drupal
     labels:
       lagoon.type: varnish
+      traefik.enable: true
+      traefik.frontend.rule: "HostRegexp:{subdomain:([0-9A-Za-z_-]+.)?}${COMPOSE_HOSTNAME}"
+      traefik.port: 8080
     links:
       - nginx # links varnish to the nginx in this docker-compose project, or it would try to connect to any nginx running in docker
     << : *default-user # uses the defined user from top
@@ -126,9 +130,9 @@ services:
       << : *default-environment
       VARNISH_BYPASS: "true" # by default we bypass varnish, change to 'false' or remove in order to tell varnish to cache if possible
     networks:
-      - amazeeio-network
+      - traefik
       - default
 
 networks:
-  amazeeio-network:
-    external: true
+  traefik:
+    name: traefik
