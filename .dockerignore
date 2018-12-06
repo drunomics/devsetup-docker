@@ -1,0 +1,7 @@
+.git
+vendor
+files
+web/modules/contrib
+backstop/backstop_data
+tests/sitespeedio/output
+**/node_modules
