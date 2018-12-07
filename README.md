@@ -14,7 +14,7 @@ From your drupal-project root directory, run:
 
     git clone https://github.com/drunomics/devsetup-docker --branch=2.x devsetup-tmp
     rm -rf devsetup-tmp/.git devsetup-tmp/README.md
-    cp -rfT devsetup-tmp devsetup-tmp .
+    cp -rfT devsetup-tmp .
         
     # Apply replacements and cleanup.
     php process-replacements.php
