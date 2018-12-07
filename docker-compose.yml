@@ -3,12 +3,23 @@ version: '2.3'
 x-lagoon-project:
   # Lagoon project name (leave `&lagoon-project` when you edit this).
   # Note that we need to provide env default values for execution on lagoon.
-  &lagoon-project ${COMPOSE_PROJECT:-{{ project }}}
+  &lagoon-project ${COMPOSE_PROJECT_NAME:-{{ project }}}
+
+x-labels:
+  &default-labels
+    # Define labels added to all containers.
+    lupus-ci.job_name: ${LUPUS_CI_JOB_NAME:-}
+
+x-container:
+  &container-defaults
+    restart: always
 
 x-volumes:
   &default-volumes
     # Define all volumes you would like to have real-time mounted into the docker containers
     volumes:
+      - ${COMPOSE_CACHE_DIR:-./devsetup-docker/data}/.composer/cache:/home/.composer/cache
+      - ${COMPOSE_CACHE_DIR:-./devsetup-docker/data}/.npm:/home/.npm
       - ${COMPOSE_APP_DIR:-.}:/app:delegated
 
 x-environment:
@@ -26,7 +37,7 @@ x-user:
   &default-user
     # The default user under which the containers should run.
     # Change this if you are on linux and run with another user than id `1000`
-    user: '1000'
+    user: ${COMPOSE_DEFAULT_USER:-1000}
 
 services:
   # cli container, will be used for executing composer and any local commands
@@ -38,21 +49,24 @@ services:
       dockerfile: devsetup-docker/Dockerfile.cli
       args:
         APP_FILES: ${COMPOSE_BUILD_APP_FILES:-.}
+        LAGOON_SSH_PRIVATE_KEY: ${LAGOON_SSH_PRIVATE_KEY:-}
     image: *lagoon-project
     labels:
       # Lagoon Labels
       lagoon.type: cli-persistent
       lagoon.persistent.name: nginx # mount the persistent storage of nginx into this container
       lagoon.persistent: /app/files/ # location where the persistent storage should be mounted
+      << : *default-labels
     << : *default-volumes # loads the defined volumes from the top
-    user: root
+    << : *container-defaults
+    user: ${COMPOSE_CLI_USER:-1000}
     environment:
       << : *default-environment # loads the defined environment variables from the top
 
   nginx:
     build:
-      context: .
-      dockerfile: devsetup-docker/Dockerfile.nginx
+      context: devsetup-docker
+      dockerfile: Dockerfile.nginx
       args:
         CLI_IMAGE: *lagoon-project # Inject the name of the cli image
     labels:
@@ -60,28 +74,34 @@ services:
       lagoon.persistent: /app/files/ # define where the persistent storage should be mounted too
       traefik.enable: true
       traefik.port: 8080
+      traefik.frontend.rule: "HostRegexp:nginx.{subdomain:([0-9A-Za-z_-]+.)?}${COMPOSE_HOSTNAME}"
+      traefik.frontend.auth.basic.users: ${COMPOSE_DEFAULT_AUTH:-}
+      << : *default-labels
     << : *default-volumes # loads the defined volumes from the top
     << : *default-user # uses the defined user from top
+    << : *container-defaults
     depends_on:
       - cli # basically just tells docker-compose to build the cli first
     environment:
       << : *default-environment # loads the defined environment variables from the top
-      LAGOON_LOCALDEV_URL: nginx-drupal-example.docker.amazee.io # generate another route for nginx, by default we go to varnish
+      LAGOON_LOCALDEV_URL: ${COMPOSE_HOSTNAME} # generate another route for nginx, by default we go to varnish
     networks:
       - traefik
       - default
 
   php:
     build:
-      context: .
-      dockerfile: devsetup-docker/Dockerfile.php
+      context: devsetup-docker
+      dockerfile: Dockerfile.php
       args:
         CLI_IMAGE: *lagoon-project
     labels:
       lagoon.type: nginx-php-persistent
       lagoon.name: nginx # we want this service be part of the nginx pod in Lagoon
       lagoon.persistent: /app/files/ # define where the persistent storage should be mounted too
+      << : *default-labels
     << : *default-volumes # loads the defined volumes from the top
+    << : *container-defaults
     << : *default-user # uses the defined user from top
     depends_on:
       - cli # basically just tells docker-compose to build the cli first
@@ -92,9 +112,11 @@ services:
     image: amazeeio/mariadb-drupal
     labels:
       lagoon.type: mariadb
+      << : *default-labels
     ports:
       - "3306" # exposes the port 3306 with a random local port, find it with `docker-compose port mariadb 3306`
     << : *default-user # uses the defined user from top
+    << : *container-defaults
     environment:
       << : *default-environment
 
@@ -102,15 +124,21 @@ services:
     image: amazeeio/redis
     labels:
       lagoon.type: redis
+      << : *default-labels
     << : *default-user # uses the defined user from top
+    << : *container-defaults
     environment:
       << : *default-environment
 
   solr:
-    image: amazeeio/solr:6.6-drupal
+    build:
+      context: devsetup-docker
+      dockerfile: Dockerfile.solr
     labels:
       lagoon.type: solr
+      << : *default-labels
     << : *default-user # uses the defined user from top
+    << : *container-defaults
     ports:
       - "8983" # exposes the port 8983 with a random local port, find it with `docker-compose port solr 8983`
     environment:
@@ -122,10 +150,13 @@ services:
       lagoon.type: varnish
       traefik.enable: true
       traefik.frontend.rule: "HostRegexp:{subdomain:([0-9A-Za-z_-]+.)?}${COMPOSE_HOSTNAME}"
+      traefik.frontend.auth.basic.users: ${COMPOSE_DEFAULT_AUTH:-}
       traefik.port: 8080
+      << : *default-labels
     links:
       - nginx # links varnish to the nginx in this docker-compose project, or it would try to connect to any nginx running in docker
     << : *default-user # uses the defined user from top
+    << : *container-defaults
     environment:
       << : *default-environment
       VARNISH_BYPASS: "true" # by default we bypass varnish, change to 'false' or remove in order to tell varnish to cache if possible
