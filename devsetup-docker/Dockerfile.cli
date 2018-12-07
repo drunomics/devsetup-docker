@@ -1,7 +1,5 @@
-FROM amazeeio/php:7.2-cli-drupal
+FROM amazeeio/php:7.1-cli-drupal
 ARG APP_FILES=.
-ARG LAGOON_SSH_PRIVATE_KEY
-ARG LAGOON_GIT_BRANCH
 
 # APP_FILES should be set to the code-base (.) during builds on lagoon.
 #
@@ -10,6 +8,31 @@ ARG LAGOON_GIT_BRANCH
 # via docker-compose anyway, so the build in the /app directory is not needed.
 
 COPY $APP_FILES /app
+
+# Make sure right nodejs version is in use.
+RUN apk update && \
+    apk del nodejs-current yarn && \
+    apk add nodejs
+
+# Install node build dependencies and imagemagick.
+RUN apk add --update \
+    bash \
+    zlib-dev \
+    lcms2-dev \
+    libpng-dev \
+    gcc \
+    g++ \
+    make \
+    autoconf \
+    automake \
+    libtool \
+    nasm \
+    imagemagick \
+  && rm -rf /var/cache/apk/*
+
+# Workaround "could not get uid/gid" npm errors.
+# https://github.com/npm/npm/issues/20861
+RUN npm config set unsafe-perm true
 
 # Define where the Drupal root is located.
 ENV WEBROOT=web
@@ -20,9 +43,14 @@ ENV PATH="/app/vendor/bin:${PATH}"
 # base.
 RUN /bin/bash -c "[[ ! -f /app/composer.json ]] || (composer install-phar-tools && ./vendor/bin/phapp setup amazeeio.build)"
 
+ARG LAGOON_SSH_PRIVATE_KEY
+ARG LAGOON_GIT_BRANCH
+
+# Register ssh key, if one is given via the argument.
+RUN /lagoon/entrypoints/05-ssh-key.sh
+
 # If the branch is pre-built (i.e. a build branch), the following step can be
 # skipped.
 RUN /bin/bash -c "if [[ -f /app/composer.json ]] && [[ ! \"$LAGOON_GIT_BRANCH\" =~ ^build/ ]]; then \
-  /lagoon/entrypoints/05-ssh-key.sh && \
   ./vendor/bin/phapp build; \
 fi"

@@ -108,3 +108,8 @@ if (getenv('LAGOON_ROUTES')) {
 if (getenv('TMP')) {
   $config['system.file']['path']['temporary'] = getenv('TMP');
 }
+
+### Hash Salt
+if (getenv('LAGOON')) {
+  $settings['hash_salt'] = hash('sha256', getenv('LAGOON_PROJECT'));
+}

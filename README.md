@@ -1,12 +1,12 @@
 # drunomics docker devsetup
 
-docker setup based upon https://github.com/drunomics/devsetup-amazeeio
+docker development setup based upon docker-compose. 
 
 Features:
 - utilizes docker-compose for local development (WIP)
-- supports drunomics' CI system - lupus-CI
-- compatible to amazeeio.'s lagoon - see https://lagoon.readthedocs.io/en/latest/ 
-
+- extendable to support drunomics' CI system - lupus-CI
+- compatible to amazeeio.'s lagoon, just add https://github.com/drunomics/devsetup-amazeeio
+ 
 
 ## Setup
 
@@ -20,20 +20,11 @@ From your drupal-project root directory, run:
     php process-replacements.php
     rm -rf devsetup-tmp process-replacements.php
 
-If you do not use lagoon, you can delete related files:
-
-    rm -f .lagoon.yml dotenv/amazeeio.env
-
 Then commit changes:
 
     git add .
     git commit -am "Added docker devsetup."
 
-## Lagoon
-    
-Follow the lagoon docs for finishing the setup on amazeeio:
-
-  https://lagoon.readthedocs.io/en/latest/using_lagoon/setup_project/#2-provide-access-to-your-code
 
 ## Credits
 

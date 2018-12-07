@@ -1,0 +1,6 @@
+FROM amazeeio/solr:6.6-drupal
+
+# Overwrite/extend existing config with everything provided.
+COPY ./solr-conf/* /solr-conf/conf/
+
+CMD ["solr-precreate", "drupal", "/solr-conf"]
