@@ -35,8 +35,8 @@ if (getenv('LAGOON')) {
   $config['search_api.server.solr']['name'] = 'Lagoon Solr - Environment: ' . getenv('LAGOON_PROJECT');
 }
 
-### Lagoon Redis connection. Disable for now.
-if (getenv('LAGOON') && FALSE){
+### Lagoon Redis connection.
+if (getenv('LAGOON')) {
   $settings['redis.connection']['interface'] = 'PhpRedis';
   $settings['redis.connection']['host'] = getenv('REDIS_HOST') ?: 'redis';
   $settings['redis.connection']['port'] = 6379;
@@ -44,7 +44,7 @@ if (getenv('LAGOON') && FALSE){
   $settings['cache_prefix']['default'] = getenv('LAGOON_PROJECT') . '_' . getenv('LAGOON_GIT_SAFE_BRANCH');
 
   # Do not set the cache during installations of Drupal
-  if (!drupal_installation_attempted() && extension_loaded('redis')) {
+  if (!drupal_installation_attempted() && extension_loaded('redis') && file_exists(__DIR__ . '/../../modules/contrib/redis/redis.services.yml')) {
     $settings['cache']['default'] = 'cache.backend.redis';
 
     // Include the default example.services.yml from the module, which will
@@ -113,3 +113,4 @@ if (getenv('TMP')) {
 if (getenv('LAGOON')) {
   $settings['hash_salt'] = hash('sha256', getenv('LAGOON_PROJECT'));
 }
+
