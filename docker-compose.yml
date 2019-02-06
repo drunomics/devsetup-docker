@@ -113,8 +113,6 @@ services:
     labels:
       lagoon.type: mariadb
       << : *default-labels
-    ports:
-      - "3306" # exposes the port 3306 with a random local port, find it with `docker-compose port mariadb 3306`
     << : *default-user # uses the defined user from top
     << : *container-defaults
     environment:
@@ -139,8 +137,6 @@ services:
       << : *default-labels
     << : *default-user # uses the defined user from top
     << : *container-defaults
-    ports:
-      - "8983" # exposes the port 8983 with a random local port, find it with `docker-compose port solr 8983`
     environment:
       << : *default-environment
 
