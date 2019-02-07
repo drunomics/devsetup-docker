@@ -30,8 +30,11 @@ x-environment:
     LAGOON_ROUTE: http://${COMPOSE_HOSTNAME}
     # Uncomment if you like to have the system behave like in production
     #LAGOON_ENVIRONMENT_TYPE: production
-    # Uncomment to enable xdebug and then restart via `docker-compose up -d`
-    # XDEBUG_ENABLE: "true"
+
+    MARIADB_DATABASE: ${PHAPP_ENV_MYSQL_DEFAULT_DATABASE:-drupal}
+    MARIADB_USER: ${PHAPP_ENV_MYSQL_DEFAULT_USERNAME:-drupal}
+    MARIADB_PASSWORD: ${PHAPP_ENV_MYSQL_DEFAULT_PASSWORD:-change-me}
+    MARIADB_ROOT_PASSWORD: ${PHAPP_ENV_MYSQL_DEFAULT_PASSWORD:-Lag00n-change-me}
 
 x-user:
   &default-user
