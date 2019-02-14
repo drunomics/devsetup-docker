@@ -3,7 +3,7 @@ version: '2.3'
 x-lagoon-project:
   # Lagoon project name (leave `&lagoon-project` when you edit this).
   # Note that we need to provide env default values for execution on lagoon.
-  &lagoon-project ${COMPOSE_PROJECT_NAME:-{{ project }}}
+  &lagoon-project ${COMPOSE_PROJECT_NAME:-ldp-project}
 
 x-labels:
   &default-labels
@@ -89,8 +89,8 @@ services:
       << : *default-environment # loads the defined environment variables from the top
       LAGOON_LOCALDEV_URL: ${COMPOSE_HOSTNAME} # generate another route for nginx, by default we go to varnish
     networks:
-      - traefik
-      - default
+      default: {}
+      traefik: {}
 
   php:
     build:
@@ -144,24 +144,31 @@ services:
       << : *default-environment
 
   varnish:
-    image: amazeeio/varnish-drupal
+    build:
+      context: devsetup-docker
+      dockerfile: Dockerfile.varnish
     labels:
       lagoon.type: varnish
       traefik.enable: true
       traefik.frontend.rule: "HostRegexp:{subdomain:([0-9A-Za-z_-]+.)?}${COMPOSE_HOSTNAME}"
       traefik.frontend.auth.basic.users: ${COMPOSE_DEFAULT_AUTH:-}
-      traefik.port: 8080
+      traefik.port: 80
       << : *default-labels
     links:
       - nginx # links varnish to the nginx in this docker-compose project, or it would try to connect to any nginx running in docker
-    << : *default-user # uses the defined user from top
     << : *container-defaults
     environment:
       << : *default-environment
+      VARNISH_BACKEND_HOST: nginx
       VARNISH_BYPASS: "true" # by default we bypass varnish, change to 'false' or remove in order to tell varnish to cache if possible
     networks:
-      - traefik
-      - default
+      traefik: {}
+      default:
+        # Make this container available under the main hostname for other containers, so the cli
+        # container can use it to access the site during test runs. This works even during localdev
+        # when the hostname would resolve to 127.0.0.1.
+        aliases:
+          - ${COMPOSE_HOSTNAME}
 
 networks:
   traefik:
