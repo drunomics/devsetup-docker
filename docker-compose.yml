@@ -138,7 +138,6 @@ services:
     labels:
       lagoon.type: solr
       << : *default-labels
-    << : *default-user # uses the defined user from top
     << : *container-defaults
     environment:
       << : *default-environment
