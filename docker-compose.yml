@@ -12,7 +12,7 @@ x-labels:
 
 x-container:
   &container-defaults
-    restart: always
+    restart: ${COMPOSER_CONTAINER_RESTART:-always}
 
 x-volumes:
   &default-volumes
