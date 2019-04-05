@@ -20,7 +20,7 @@ From your drupal-project root directory, run:
     php process-replacements.php
     rm -rf devsetup-tmp process-replacements.php
     
-    echo 
+    echo \
     'COMPOSE_AMAZEEIO_VERSION=v0.22.1 
     COMPOSE_AMAZEEIO_PHP_VERSION=7.2
     ' >> env.defaults
