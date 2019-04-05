@@ -1,7 +1,7 @@
 ARG CLI_IMAGE
+ARG COMPOSE_AMAZEEIO_VERSION
 FROM ${CLI_IMAGE} as cli
-
-FROM amazeeio/nginx-drupal
+FROM amazeeio/nginx-drupal:${COMPOSE_AMAZEEIO_VERSION}
 
 COPY --from=cli /app /app
 

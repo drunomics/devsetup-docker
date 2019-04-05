@@ -1,5 +1,8 @@
-FROM amazeeio/php:7.1-cli-drupal
+ARG COMPOSE_AMAZEEIO_VERSION
+ARG COMPOSE_AMAZEEIO_PHP_VERSION=7.3
+FROM amazeeio/php:${COMPOSE_AMAZEEIO_PHP_VERSION}-cli-drupal-${COMPOSE_AMAZEEIO_VERSION}
 ARG APP_FILES=.
+ARG COMPOSE_DEFAULT_USER=1000
 
 # APP_FILES should be set to the code-base (.) during builds on lagoon.
 #
@@ -33,6 +36,8 @@ RUN apk add --update \
 # Workaround "could not get uid/gid" npm errors.
 # https://github.com/npm/npm/issues/20861
 RUN npm config set unsafe-perm true
+# Ensure ~/.config is created and make npm update check work without warnings.
+RUN mkdir -p /home/.config && chown -R $COMPOSE_DEFAULT_USER:0 /home/.config
 
 # Define where the Drupal root is located.
 ENV WEBROOT=web
@@ -47,7 +52,8 @@ ARG LAGOON_SSH_PRIVATE_KEY
 ARG LAGOON_GIT_BRANCH
 
 # Register ssh key, if one is given via the argument.
-RUN /lagoon/entrypoints/05-ssh-key.sh
+RUN /lagoon/entrypoints/05-ssh-key.sh && chown -R $COMPOSE_DEFAULT_USER:0 /home/.ssh
+RUN echo "[ ! -f /home/.ssh/key ] || chmod 600 /home/.ssh/key" > /lagoon/entrypoints/05-ssh-key-permission-fix.sh
 
 # If the branch is pre-built (i.e. a build branch), the following step can be
 # skipped.

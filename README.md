@@ -19,6 +19,11 @@ From your drupal-project root directory, run:
     # Apply replacements and cleanup.
     php process-replacements.php
     rm -rf devsetup-tmp process-replacements.php
+    
+    echo 
+    'COMPOSE_AMAZEEIO_VERSION=v0.22.1 
+    COMPOSE_AMAZEEIO_PHP_VERSION=7.2
+    ' >> env.defaults
 
 Then commit changes:
 
@@ -26,8 +31,10 @@ Then commit changes:
     git commit -am "Added docker devsetup."
 
 
+If you are not using drunomics/drupal-project, rename "env.defaults" to ".env" - docker-compose picks the variables up. 
+
 ## Credits
 
 * Based upon the setup provided by amazee.io, see 
   https://github.com/amazeeio/drupal-example
-* (c) 2018 drunomics GmbH, GNU GPLv2+
+* (c) 2019 drunomics GmbH, GNU GPLv2+

@@ -1,9 +1,0 @@
-FROM amazeeio/varnish-drupal
-
-# Make it listen on port 80.
-RUN sed -i 's/-a :8080/-a :80/' /varnish-start.sh
-
-# tells the local development environment on which port we are running
-ENV LAGOON_LOCALDEV_HTTP_PORT=80
-
-EXPOSE 80
