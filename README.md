@@ -23,7 +23,7 @@ From your drupal-project root directory, run:
     echo \
     'COMPOSE_AMAZEEIO_VERSION=v0.22.1 
     COMPOSE_AMAZEEIO_PHP_VERSION=7.2
-    ' >> .env.defaults
+    ' >> .env-defaults
 
 Then commit changes:
 
