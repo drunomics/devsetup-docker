@@ -3,7 +3,7 @@ version: '2.3'
 x-lagoon-project:
   # Lagoon project name (leave `&lagoon-project` when you edit this).
   # Note that we need to provide env default values for execution on lagoon.
-  &lagoon-project ${COMPOSE_PROJECT_NAME:-ldp-project}
+  &lagoon-project ${COMPOSE_PROJECT_NAME:-{{ project }}}
 
 x-labels:
   &default-labels
