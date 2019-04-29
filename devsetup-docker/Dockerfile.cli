@@ -38,6 +38,8 @@ RUN apk add --update \
 RUN npm config set unsafe-perm true
 # Ensure ~/.config is created and make npm update check work without warnings.
 RUN mkdir -p /home/.config && chown -R $COMPOSE_DEFAULT_USER:0 /home/.config
+# Update npm.
+RUN npm install -g npm@^6.9.0
 
 # Define where the Drupal root is located.
 ENV WEBROOT=web
