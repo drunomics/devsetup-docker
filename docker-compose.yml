@@ -168,6 +168,7 @@ services:
       VARNISH_BACKEND_HOST: nginx
       VARNISH_BYPASS: "true" # by default we bypass varnish, change to 'false' or remove in order to tell varnish to cache if possible
     networks:
+      default: {}
       traefik: {}
 
 networks:
