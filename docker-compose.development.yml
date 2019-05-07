@@ -1,5 +1,16 @@
 # Extends the main docker-compose file depending on the active environment.
 
+x-environment:
+  &php-environment
+  # XDEBUG_ENABLE: "true"
+  PHP_MAX_EXECUTION_TIME: 900
+  PHP_MAX_INPUT_VARS: 2000
+  PHP_MAX_FILE_UPLOADS: 20
+  PHP_MEMORY_LIMIT: 256M
+  PHP_DISPLAY_ERRORS: 'On'
+  PHP_DISPLAY_STARTUP_ERRORS: 'On'
+  SSMTP_MAILHUB: maildev
+
 # This mostly applies low-memory settings.
 version: '2.3'
 services:
@@ -19,12 +30,20 @@ services:
       MARIADB_INNODB_BUFFER_POOL_INSTANCES: 1
       MARIADB_LOG_SLOW: 1
       # MARIADB_LOG_QUERIES: 1
+  cli:
+    environment:
+      << : *php-environment
+    # Allow mounting the sync dir to some common-dir when running multiple instances of the project.
+    volumes:
+      - ${COMPOSE_SYNC_DIR:-./dumps/sync}:/app/dumps/sync
   php:
     environment:
-      # XDEBUG_ENABLE: "true"
-      PHP_MAX_EXECUTION_TIME: 900
-      PHP_MAX_INPUT_VARS: 2000
-      PHP_MAX_FILE_UPLOADS: 20
-      PHP_MEMORY_LIMIT: 400M
-      PHP_DISPLAY_ERRORS: 'On'
-      PHP_DISPLAY_STARTUP_ERRORS: 'On'
+      << : *php-environment
+  maildev:
+    image: djfarrelly/maildev:${MAILDEV_VERSION:-1.0.0}
+    labels:
+      traefik.enable: true
+      traefik.frontend.rule: "HostRegexp:{subdomain:maildev--}${COMPOSE_HOSTNAME}"
+      traefik.frontend.auth.basic.users: ${COMPOSE_ADMIN_AUTH:-admin:missing-some-pass-here}
+      traefik.port: 80
+
