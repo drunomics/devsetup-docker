@@ -126,6 +126,8 @@ services:
     << : *container-defaults
     environment:
       << : *default-environment
+    volumes:
+      - data-volume:/var/lib/mysql
 
   redis:
     image: amazeeio/redis:${COMPOSE_AMAZEEIO_VERSION:-latest}
@@ -174,3 +176,6 @@ services:
 networks:
   traefik:
     name: traefik
+
+volumes:
+  data-volume:
