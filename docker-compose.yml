@@ -22,6 +22,11 @@ x-volumes:
       - ${COMPOSE_CACHE_DIR:-./devsetup-docker/data}/.npm:/home/.npm
       - ${COMPOSE_APP_DIR:-.}:/app:delegated
 
+x-networks:
+  &add-traefik
+    default: {}
+    traefik: {}
+
 x-environment:
   &default-environment
     LAGOON_PROJECT: *lagoon-project
@@ -68,6 +73,8 @@ services:
     << : *container-defaults
     environment:
       << : *default-environment # loads the defined environment variables from the top
+    networks:
+      << : *add-traefik # Allow traefik to add network aliases for internal connections.
 
   nginx:
     build:
@@ -93,8 +100,7 @@ services:
       << : *default-environment # loads the defined environment variables from the top
       LAGOON_LOCALDEV_URL: ${COMPOSE_HOSTNAME} # generate another route for nginx, by default we go to varnish
     networks:
-      default: {}
-      traefik: {}
+      << : *add-traefik
 
   php:
     build:
@@ -116,6 +122,8 @@ services:
       - cli # basically just tells docker-compose to build the cli first
     environment:
       << : *default-environment # loads the defined environment variables from the top
+    networks:
+      << : *add-traefik # Allow traefik to add network aliases for internal connections.
 
   mariadb:
     image: amazeeio/mariadb-drupal:${COMPOSE_AMAZEEIO_VERSION:-latest}
@@ -170,8 +178,7 @@ services:
       VARNISH_BACKEND_HOST: nginx
       VARNISH_BYPASS: "true" # by default we bypass varnish, change to 'false' or remove in order to tell varnish to cache if possible
     networks:
-      default: {}
-      traefik: {}
+      << : *add-traefik
 
 networks:
   traefik:
