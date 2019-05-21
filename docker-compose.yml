@@ -122,8 +122,6 @@ services:
       - cli # basically just tells docker-compose to build the cli first
     environment:
       << : *default-environment # loads the defined environment variables from the top
-    networks:
-      << : *add-traefik # Allow traefik to add network aliases for internal connections.
 
   mariadb:
     image: amazeeio/mariadb-drupal:${COMPOSE_AMAZEEIO_VERSION:-latest}
