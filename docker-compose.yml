@@ -88,7 +88,7 @@ services:
       lagoon.persistent: /app/files/ # define where the persistent storage should be mounted too
       traefik.enable: true
       traefik.port: 8080
-      traefik.frontend.rule: "HostRegexp:nginx.{subdomain:([0-9A-Za-z_-]+.)?}${COMPOSE_HOSTNAME}"
+      traefik.frontend.rule: "HostRegexp:{nginx--([0-9A-Za-z_]*[0-9A-Za-z]+.)?}${COMPOSE_HOSTNAME}"
       traefik.frontend.auth.basic.users: ${COMPOSE_DEFAULT_AUTH:-}
       << : *default-labels
     << : *default-volumes # loads the defined volumes from the top
@@ -163,7 +163,7 @@ services:
     labels:
       lagoon.type: varnish
       traefik.enable: true
-      traefik.frontend.rule: "HostRegexp:{subdomain:([0-9A-Za-z_-]+.)?}${COMPOSE_HOSTNAME}"
+      traefik.frontend.rule: "HostRegexp:{subdomain:([0-9A-Za-z_]*[0-9A-Za-z]+.)?}${COMPOSE_HOSTNAME}"
       traefik.frontend.auth.basic.users: ${COMPOSE_DEFAULT_AUTH:-}
       traefik.port: 80
       << : *default-labels

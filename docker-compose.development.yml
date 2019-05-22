@@ -43,7 +43,9 @@ services:
     image: djfarrelly/maildev:${MAILDEV_VERSION:-1.0.0}
     labels:
       traefik.enable: true
-      traefik.frontend.rule: "HostRegexp:{subdomain:maildev--}${COMPOSE_HOSTNAME}"
-      traefik.frontend.auth.basic.users: ${COMPOSE_ADMIN_AUTH:-admin:missing-some-pass-here}
+      traefik.frontend.rule: "Host:maildev--${COMPOSE_HOSTNAME}"
+      traefik.frontend.auth.basic.users: ${COMPOSE_ADMIN_AUTH:-admin:missing-some-pass-here.}
       traefik.port: 80
-
+    networks:
+      default: {}
+      traefik: {}
