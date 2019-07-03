@@ -1,4 +1,4 @@
-ARG COMPOSE_AMAZEEIO_VERSION
+ARG COMPOSE_AMAZEEIO_VERSION=latest
 FROM amazeeio/solr:6.6-drupal-${COMPOSE_AMAZEEIO_VERSION}
 
 # Overwrite/extend existing config with everything provided.

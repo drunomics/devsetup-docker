@@ -59,8 +59,8 @@ services:
         APP_FILES: ${COMPOSE_BUILD_APP_FILES:-.}
         LAGOON_SSH_PRIVATE_KEY: ${LAGOON_SSH_PRIVATE_KEY:-}
         COMPOSE_DEFAULT_USER: ${COMPOSE_DEFAULT_USER:-1000}
-        COMPOSE_AMAZEEIO_PHP_VERSION: ${COMPOSE_AMAZEEIO_PHP_VERSION}
-        COMPOSE_AMAZEEIO_VERSION: ${COMPOSE_AMAZEEIO_VERSION}
+        COMPOSE_AMAZEEIO_PHP_VERSION: ${COMPOSE_AMAZEEIO_PHP_VERSION:-7.2}
+        COMPOSE_AMAZEEIO_VERSION: ${COMPOSE_AMAZEEIO_VERSION:-latest}
     image: *lagoon-project
     labels:
       # Lagoon Labels
@@ -74,7 +74,7 @@ services:
     environment:
       << : *default-environment # loads the defined environment variables from the top
     networks:
-      << : *add-traefik # Allow traefik to add network aliases for internal connections.
+      << : *add-traefik
 
   nginx:
     build:
@@ -107,7 +107,7 @@ services:
       context: devsetup-docker
       dockerfile: Dockerfile.php
       args:
-        COMPOSE_AMAZEEIO_PHP_VERSION: ${COMPOSE_AMAZEEIO_PHP_VERSION}
+        COMPOSE_AMAZEEIO_PHP_VERSION: ${COMPOSE_AMAZEEIO_PHP_VERSION:-7.2}
         COMPOSE_AMAZEEIO_VERSION: ${COMPOSE_AMAZEEIO_VERSION:-latest}
         CLI_IMAGE: *lagoon-project
     labels:
@@ -124,7 +124,11 @@ services:
       << : *default-environment # loads the defined environment variables from the top
 
   mariadb:
-    image: amazeeio/mariadb-drupal:${COMPOSE_AMAZEEIO_VERSION:-latest}
+    build:
+      context: devsetup-docker
+      dockerfile: Dockerfile.mariadb
+      args:
+        COMPOSE_AMAZEEIO_VERSION: ${COMPOSE_AMAZEEIO_VERSION:-latest}
     labels:
       lagoon.type: mariadb
       << : *default-labels
@@ -136,7 +140,11 @@ services:
       - data-volume:/var/lib/mysql
 
   redis:
-    image: amazeeio/redis:${COMPOSE_AMAZEEIO_VERSION:-latest}
+    build:
+      context: devsetup-docker
+      dockerfile: Dockerfile.redis
+      args:
+        COMPOSE_AMAZEEIO_VERSION: ${COMPOSE_AMAZEEIO_VERSION:-latest}
     labels:
       lagoon.type: redis
       << : *default-labels
@@ -159,7 +167,11 @@ services:
       << : *default-environment
 
   varnish:
-    image: amazeeio/varnish-drupal:${COMPOSE_AMAZEEIO_VERSION:-latest}
+    build:
+      context: devsetup-docker
+      dockerfile: Dockerfile.varnish
+      args:
+        COMPOSE_AMAZEEIO_VERSION: ${COMPOSE_AMAZEEIO_VERSION:-latest}
     labels:
       lagoon.type: varnish
       traefik.enable: true
