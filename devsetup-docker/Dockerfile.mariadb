@@ -1,0 +1,6 @@
+ARG COMPOSE_AMAZEEIO_VERSION=latest
+ARG COMPOSE_MARIADB_IMAGE=mariadb-drupal
+FROM amazeeio/$COMPOSE_MARIADB_IMAGE:$COMPOSE_AMAZEEIO_VERSION
+
+# Note: We use this custom Dockerfile only such that the variable $COMPOSE_AMAZEEIO_VERSION can be applied.
+# Applying variables inside of docker-compose does not work with amazeeio's lagoon infrastructure.
