@@ -45,6 +45,7 @@ services:
       traefik.enable: true
       traefik.frontend.rule: "Host:maildev--${COMPOSE_HOSTNAME}"
       traefik.frontend.auth.basic.users: ${COMPOSE_ADMIN_AUTH:-admin:missing-some-pass-here.}
+      traefik.frontend.priority: 100
       traefik.port: 80
     networks:
       default: {}
