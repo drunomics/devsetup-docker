@@ -45,8 +45,10 @@ services:
       traefik.enable: true
       traefik.frontend.rule: "Host:maildev--${COMPOSE_HOSTNAME}"
       traefik.frontend.auth.basic.users: ${COMPOSE_ADMIN_AUTH:-admin:missing-some-pass-here.}
-      traefik.frontend.priority: 100
+      traefik.frontend.priority: 1000
       traefik.port: 80
+      lupus-ci.job_name: ${LUPUS_CI_JOB_NAME:-}
+    restart: ${COMPOSER_CONTAINER_RESTART:-always}
     networks:
       default: {}
       traefik: {}
