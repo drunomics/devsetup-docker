@@ -153,6 +153,14 @@ services:
     environment:
       << : *default-environment
 
+## Enable, if memcached should be used instead of redis (above).
+#  memcached:
+#     image: memcached:${MEMCACHED_VERSION:-1.5.2}
+#     command: ["-m", "${MEMCACHED_MEMORY:-32M}"]
+#     << : *container-defaults
+#     labels:
+#       << : *default-labels
+
   solr:
     build:
       context: devsetup-docker
