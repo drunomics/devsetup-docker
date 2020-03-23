@@ -41,6 +41,10 @@ x-environment:
     MARIADB_PASSWORD: ${PHAPP_ENV_MYSQL_DEFAULT_PASSWORD:-change-me}
     MARIADB_ROOT_PASSWORD: ${PHAPP_ENV_MYSQL_DEFAULT_PASSWORD:-Lag00n-change-me}
 
+    # Pass through some lupus-ci env variables; e.g. the now token for automated deployment.
+    NOW_TOKEN: ${NOW_TOKEN:-}
+    GIT_BRANCH: ${GIT_BRANCH:-}
+
 x-user:
   &default-user
     # The default user under which the containers should run.
