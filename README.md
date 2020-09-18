@@ -21,8 +21,8 @@ From your drupal-project root directory, run:
     rm -rf devsetup-tmp process-replacements.php
     
     echo \
-    'COMPOSE_AMAZEEIO_VERSION=v0.24.0
-    COMPOSE_AMAZEEIO_PHP_VERSION=7.2
+    'COMPOSE_AMAZEEIO_VERSION=v1.9.1
+    COMPOSE_AMAZEEIO_PHP_VERSION=7.4
     ' >> .env-defaults
 
 Then commit changes:
