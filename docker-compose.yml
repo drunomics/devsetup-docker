@@ -187,8 +187,10 @@ services:
     labels:
       lagoon.type: varnish
       traefik.enable: true
-      traefik.frontend.rule: "HostRegexp:{subdomain:([0-9A-Za-z_-]+.)?}${COMPOSE_HOSTNAME}"
-      traefik.frontend.auth.basic.users: ${COMPOSE_DEFAULT_AUTH:-}
+      ## Restrict access for GET and POST request but allow CORS OPTIONS request without password.
+      traefik.servicemain.frontend.rule: "Method:GET,POST,HEAD,PUT,PATCH,DELETE;HostRegexp:{subdomain:([0-9A-Za-z_-]+.)?}${COMPOSE_HOSTNAME}"
+      traefik.servicemain.frontend.auth.basic.users: ${COMPOSE_DEFAULT_AUTH:-}
+      traefik.servicecors.frontend.rule: "Method:OPTIONS;HostRegexp:{subdomain:([0-9A-Za-z_-]+.)?}${COMPOSE_HOSTNAME}"
       traefik.port: 80
       << : *default-labels
     links:
