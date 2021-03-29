@@ -7,49 +7,49 @@ x-lagoon-project:
 
 x-labels:
   &default-labels
-  # Define labels added to all containers.
-  lupus-ci.job_name: ${LUPUS_CI_JOB_NAME:-}
+    # Define labels added to all containers.
+    lupus-ci.job_name: ${LUPUS_CI_JOB_NAME:-}
 
 x-container:
   &container-defaults
-  restart: ${COMPOSER_CONTAINER_RESTART:-always}
+    restart: ${COMPOSER_CONTAINER_RESTART:-always}
 
 x-volumes:
   &default-volumes
-  # Define all volumes you would like to have real-time mounted into the docker containers
-  volumes:
-    - ${COMPOSE_CACHE_DIR:-./devsetup-docker/data}/.composer/cache:/home/.composer/cache
-    - ${COMPOSE_CACHE_DIR:-./devsetup-docker/data}/.npm:/home/.npm
-    - ${COMPOSE_APP_DIR:-.}:/app:delegated
+    # Define all volumes you would like to have real-time mounted into the docker containers
+    volumes:
+      - ${COMPOSE_CACHE_DIR:-./devsetup-docker/data}/.composer/cache:/home/.composer/cache
+      - ${COMPOSE_CACHE_DIR:-./devsetup-docker/data}/.npm:/home/.npm
+      - ${COMPOSE_APP_DIR:-.}:/app:delegated
 
 x-networks:
   &add-traefik
-  default: {}
-  traefik: {}
+    default: {}
+    traefik: {}
 
 x-environment:
   &default-environment
-  LAGOON_PROJECT: *lagoon-project
-  # Route that should be used locally, if you are using pygmy,
-  # this route *must* end with .docker.amazee.io
-  LAGOON_ROUTE: http://${COMPOSE_HOSTNAME}
-  # Uncomment if you like to have the system behave like in production
-  #LAGOON_ENVIRONMENT_TYPE: production
+    LAGOON_PROJECT: *lagoon-project
+    # Route that should be used locally, if you are using pygmy,
+    # this route *must* end with .docker.amazee.io
+    LAGOON_ROUTE: http://${COMPOSE_HOSTNAME}
+    # Uncomment if you like to have the system behave like in production
+    #LAGOON_ENVIRONMENT_TYPE: production
 
-  MARIADB_DATABASE: ${PHAPP_ENV_MYSQL_DEFAULT_DATABASE:-drupal}
-  MARIADB_USER: ${PHAPP_ENV_MYSQL_DEFAULT_USERNAME:-drupal}
-  MARIADB_PASSWORD: ${PHAPP_ENV_MYSQL_DEFAULT_PASSWORD:-change-me}
-  MARIADB_ROOT_PASSWORD: ${PHAPP_ENV_MYSQL_DEFAULT_PASSWORD:-Lag00n-change-me}
+    MARIADB_DATABASE: ${PHAPP_ENV_MYSQL_DEFAULT_DATABASE:-drupal}
+    MARIADB_USER: ${PHAPP_ENV_MYSQL_DEFAULT_USERNAME:-drupal}
+    MARIADB_PASSWORD: ${PHAPP_ENV_MYSQL_DEFAULT_PASSWORD:-change-me}
+    MARIADB_ROOT_PASSWORD: ${PHAPP_ENV_MYSQL_DEFAULT_PASSWORD:-Lag00n-change-me}
 
-  # Pass through some lupus-ci env variables; e.g. the now token for automated deployment.
-  NOW_TOKEN: ${NOW_TOKEN:-}
-  GIT_BRANCH: ${GIT_BRANCH:-}
+    # Pass through some lupus-ci env variables; e.g. the now token for automated deployment.
+    NOW_TOKEN: ${NOW_TOKEN:-}
+    GIT_BRANCH: ${GIT_BRANCH:-}
 
 x-user:
   &default-user
-  # The default user under which the containers should run.
-  # Change this if you are on linux and run with another user than id `1000`
-  user: ${COMPOSE_DEFAULT_USER:-1000}
+    # The default user under which the containers should run.
+    # Change this if you are on linux and run with another user than id `1000`
+    user: ${COMPOSE_DEFAULT_USER:-1000}
 
 services:
   # cli container, will be used for executing composer and any local commands
@@ -157,13 +157,13 @@ services:
     environment:
       << : *default-environment
 
-  ## Enable, if memcached should be used instead of redis (above).
-  #  memcached:
-  #     image: memcached:${MEMCACHED_VERSION:-1.5.2}
-  #     command: ["-m", "${MEMCACHED_MEMORY:-32M}"]
-  #     << : *container-defaults
-  #     labels:
-  #       << : *default-labels
+## Enable, if memcached should be used instead of redis (above).
+#  memcached:
+#     image: memcached:${MEMCACHED_VERSION:-1.5.2}
+#     command: ["-m", "${MEMCACHED_MEMORY:-32M}"]
+#     << : *container-defaults
+#     labels:
+#       << : *default-labels
 
   solr:
     build:
