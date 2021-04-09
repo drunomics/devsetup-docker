@@ -4,3 +4,9 @@ FROM amazeeio/$COMPOSE_MARIADB_IMAGE:$COMPOSE_AMAZEEIO_VERSION
 
 # Note: We use this custom Dockerfile only such that the variable $COMPOSE_AMAZEEIO_VERSION can be applied.
 # Applying variables inside of docker-compose does not work with amazeeio's lagoon infrastructure.
+
+# Adjust mysql root permissions for simplified development on localdev.
+# localdev makes use of the root connection for simplified development of multiple multi-sites at the same time.
+# @see web/sites/all/base-lagoon.settings.php:25
+
+ADD mariadb/allow-root-login.sql /docker-entrypoint-initdb.d/

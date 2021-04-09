@@ -62,3 +62,12 @@ RUN echo "[ ! -f /home/.ssh/key ] || chmod 600 /home/.ssh/key" > /lagoon/entrypo
 RUN /bin/bash -c "if [[ -f /app/composer.json ]] && [[ ! \"$LAGOON_GIT_BRANCH\" =~ ^build/ ]]; then \
   ./vendor/bin/phapp build; \
 fi"
+
+RUN apk add --no-cache libstdc++; \
+    curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.37.2/install.sh | bash; \
+    echo 'export NVM_NODEJS_ORG_MIRROR=https://unofficial-builds.nodejs.org/download/release;' >> $HOME/.profile; \
+    echo 'nvm_get_arch() { nvm_echo "x64-musl"; }' >> $HOME/.profile;
+
+# Fix permissions.
+RUN chown -R $COMPOSE_DEFAULT_USER:0 /home/.npmrc
+RUN chown -R $COMPOSE_DEFAULT_USER:0 /home/.nvm
