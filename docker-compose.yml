@@ -44,6 +44,8 @@ x-environment:
     # Pass through some lupus-ci env variables; e.g. the now token for automated deployment.
     NOW_TOKEN: ${NOW_TOKEN:-}
     GIT_BRANCH: ${GIT_BRANCH:-}
+    # Comment to disable Redis cache and cache failover
+    ENABLE_REDIS: "true"
 
 x-user:
   &default-user

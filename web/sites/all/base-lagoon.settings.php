@@ -38,15 +38,28 @@ if (getenv('LAGOON')) {
 }
 
 ### Lagoon Redis connection.
-if (getenv('LAGOON')) {
-  $settings['redis.connection']['interface'] = 'PhpRedis';
-  $settings['redis.connection']['host'] = getenv('REDIS_HOST') ?: 'redis';
-  $settings['redis.connection']['port'] = 6379;
+if (getenv('LAGOON') && (getenv('ENABLE_REDIS'))) {
+  $redis = new \Redis();
+  $redis_host = getenv('REDIS_HOST') ?: 'redis';
+  $redis_port = getenv('REDIS_SERVICE_PORT') ?: 6379;
+  try {
+    if (drupal_installation_attempted()) {
+      # Do not set the cache during installations of Drupal
+      throw new \Exception('Drupal installation underway.');
+    }
 
-  $settings['cache_prefix']['default'] = getenv('LAGOON_PROJECT') . '_' . getenv('LAGOON_GIT_SAFE_BRANCH');
+    $redis->connect($redis_host, $redis_port);
+    $response = $redis->ping();
 
-  # Do not set the cache during installations of Drupal
-  if (!InstallerKernel::installationAttempted() && extension_loaded('redis') && file_exists(__DIR__ . '/../../modules/contrib/redis/redis.services.yml')) {
+    if (strpos($response, 'PONG') === FALSE) {
+      throw new \Exception('Redis could be reached but is not responding correctly.');
+    }
+
+    $settings['redis.connection']['interface'] = 'PhpRedis';
+    $settings['redis.connection']['host'] = $redis_host;
+    $settings['redis.connection']['port'] = $redis_port;
+    $settings['cache_prefix']['default'] = getenv('REDIS_CACHE_PREFIX') ?: getenv('LAGOON_PROJECT') . '_' . getenv('LAGOON_GIT_SAFE_BRANCH');
+
     $settings['cache']['default'] = 'cache.backend.redis';
 
     // Include the default example.services.yml from the module, which will
@@ -90,6 +103,10 @@ if (getenv('LAGOON')) {
         ],
       ],
     ];
+  }
+  catch (\Exception $error) {
+    $settings['container_yamls'][] = 'sites/default/redis-unavailable.services.yml';
+    $settings['cache']['default'] = 'cache.backend.null';
   }
 }
 
