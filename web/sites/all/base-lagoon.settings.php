@@ -43,7 +43,7 @@ if (getenv('LAGOON') && (getenv('ENABLE_REDIS'))) {
   $redis_host = getenv('REDIS_HOST') ?: 'redis';
   $redis_port = getenv('REDIS_SERVICE_PORT') ?: 6379;
   try {
-    if (drupal_installation_attempted()) {
+    if (drupal_installation_attempted() || !extension_loaded('redis') || !file_exists(__DIR__ . '/../../modules/contrib/redis/redis.services.yml')) {
       # Do not set the cache during installations of Drupal
       throw new \Exception('Drupal installation underway.');
     }
