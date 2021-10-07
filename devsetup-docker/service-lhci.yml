@@ -1,0 +1,17 @@
+version: '2.3'
+
+services:
+  lhci:
+    build:
+      context: .
+      dockerfile: Dockerfile.lhci
+    image: lhci
+    tty: true
+    stdin_open: true
+    labels:
+      lupus-ci.job_name: ${LUPUS_CI_JOB_NAME:-}
+    environment:
+      LHCI_BUILD_CONTEXT__CURRENT_BRANCH: ${GIT_BRANCH}
+      LHCI_BUILD_CONTEXT__CURRENT_HASH: ${GIT_HASH}
+    networks:
+      default: {}

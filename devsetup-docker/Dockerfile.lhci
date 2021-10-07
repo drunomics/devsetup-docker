@@ -1,0 +1,11 @@
+FROM ubuntu:latest
+
+RUN apt-get update -y \
+    && apt-get install wget curl gnupg -y\
+    && echo "deb [arch=amd64] http://dl.google.com/linux/chrome/deb/ stable main" | tee -a /etc/apt/sources.list.d/google.list \
+    && wget -q -O - https://dl.google.com/linux/linux_signing_key.pub | apt-key add - \
+    && curl -sL https://deb.nodesource.com/setup_12.x | bash - \
+    && export DEBIAN_FRONTEND=noninteractive \
+    && apt-get update \
+    && apt-get install -yq nodejs google-chrome-stable \
+    && npm install -g @lhci/cli@0.7.2;
