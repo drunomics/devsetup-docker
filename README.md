@@ -33,6 +33,10 @@ Then commit changes:
 
 If you are not using drunomics/drupal-project, rename "env.defaults" to ".env" - docker-compose picks the variables up. 
 
+If you are using `traefik` as an external network, make sure to mark it as one in docker-compose.yml under `networks.traefik.external: true`.
+This means you are running the `traefik` network independently from the project, e.g. as part of lupus-localdev setup and the project is only meant to 
+attach to the network, but not maintain it. 
+
 ## Credits
 
 * Based upon the setup provided by amazee.io, see 
