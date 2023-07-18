@@ -70,4 +70,5 @@ RUN apk add --no-cache libstdc++; \
 
 # Fix permissions.
 RUN chown -R $COMPOSE_DEFAULT_USER:0 /home/.npmrc
+RUN chown -R $COMPOSE_DEFAULT_USER:0 /home/.npm
 RUN chown -R $COMPOSE_DEFAULT_USER:0 /home/.nvm
