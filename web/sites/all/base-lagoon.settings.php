@@ -91,11 +91,6 @@ if (getenv('LAGOON')) {
   }
 }
 
-### Lagoon Reverse proxy settings
-if (getenv('LAGOON')) {
-  $settings['reverse_proxy'] = TRUE;
-}
-
 ### Trusted Host Patterns, see https://www.drupal.org/node/2410395 for more information.
 ### If your site runs on multiple domains, you need to add these domains here
 if (getenv('LAGOON_ROUTES')) {
@@ -103,14 +98,3 @@ if (getenv('LAGOON_ROUTES')) {
     '^' . str_replace(['.', 'https://', 'http://', ','], ['\.', '', '', '|'], getenv('LAGOON_ROUTES')) . '$', // escape dots, remove schema, use commas as regex separator
   );
 }
-
-### Temp directory
-if (getenv('TMP')) {
-  $config['system.file']['path']['temporary'] = getenv('TMP');
-}
-
-### Hash Salt
-if (getenv('LAGOON')) {
-  $settings['hash_salt'] = hash('sha256', getenv('LAGOON_PROJECT'));
-}
-
