@@ -2,12 +2,18 @@
 
 /**
  * @file
- * Lagoon Drupal 8 configuration file.
+ * Lagoon Drupal 8+ configuration file.
  *
  * You should not edit this file, please use environment specific files!
+ * @see https://github.com/amazeeio/drupal-integrations/blob/master/assets/settings.lagoon.php
  */
+ 
+// Lagoon version.
+if (!defined("LAGOON_VERSION")) {
+  define("LAGOON_VERSION", "1");
+}
 
-### Lagoon Database connection
+// Lagoon database connection.
 if(getenv('LAGOON')){
   $databases['default']['default'] = array(
     'driver' => 'mysql',
@@ -20,7 +26,32 @@ if(getenv('LAGOON')){
   );
 }
 
-### Lagoon Solr connection
+// Lagoon reverse proxy settings.
+if (getenv('LAGOON')) {
+  $settings['reverse_proxy'] = TRUE;
+}
+
+// Trusted Host Patterns.
+// Trusted host patterns are not necessary on lagoon as traffic will only
+// be routed to your site via the routes (hosts) defined in .lagoon.yml.
+if (getenv('LAGOON')) {
+  $settings['trusted_host_patterns'][] = '.*';
+}
+
+// Temp directory.
+if (getenv('TMP')) {
+  $config['system.file']['path']['temporary'] = getenv('TMP');
+}
+
+// Hash salt.
+// Use HASH_SALT if found in the current environment otherwise fallback on
+// MARIADB_HOST which is a randomly generated service name.
+if (getenv('LAGOON')) {
+  $settings['hash_salt'] = hash('sha256', getenv('HASH_SALT') ?: getenv('MARIADB_HOST'));
+}
+
+
+// Lagoon Solr connection.
 // WARNING: you have to create a search_api server having "solr" machine name at
 // /admin/config/search/search-api/add-server to make this work.
 if (getenv('LAGOON')) {
@@ -35,7 +66,7 @@ if (getenv('LAGOON')) {
   $config['search_api.server.solr']['name'] = 'Lagoon Solr - Environment: ' . getenv('LAGOON_PROJECT');
 }
 
-### Lagoon Redis connection.
+// Lagoon Redis connection.
 if (getenv('LAGOON')) {
   $settings['redis.connection']['interface'] = 'PhpRedis';
   $settings['redis.connection']['host'] = getenv('REDIS_HOST') ?: 'redis';
@@ -43,13 +74,13 @@ if (getenv('LAGOON')) {
 
   $settings['cache_prefix']['default'] = getenv('LAGOON_PROJECT') . '_' . getenv('LAGOON_GIT_SAFE_BRANCH');
 
-  # Do not set the cache during installations of Drupal
+  // Do not set the cache during installations of Drupal.
   if (!drupal_installation_attempted() && extension_loaded('redis') && file_exists(__DIR__ . '/../../modules/contrib/redis/redis.services.yml')) {
     $settings['cache']['default'] = 'cache.backend.redis';
 
     // Include the default example.services.yml from the module, which will
     // replace all supported backend services (that currently includes the cache tags
-    // checksum service and the lock backends, check the file for the current list)
+    // checksum service and the lock backends, check the file for the current list).
     $settings['container_yamls'][] = 'modules/contrib/redis/example.services.yml';
 
     // Allow the services to work before the Redis module itself is enabled.
@@ -91,10 +122,3 @@ if (getenv('LAGOON')) {
   }
 }
 
-### Trusted Host Patterns, see https://www.drupal.org/node/2410395 for more information.
-### If your site runs on multiple domains, you need to add these domains here
-if (getenv('LAGOON_ROUTES')) {
-  $settings['trusted_host_patterns'] = array(
-    '^' . str_replace(['.', 'https://', 'http://', ','], ['\.', '', '', '|'], getenv('LAGOON_ROUTES')) . '$', // escape dots, remove schema, use commas as regex separator
-  );
-}
